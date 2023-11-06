@@ -1,40 +1,72 @@
 #include "lists.h"
+
+listint_t *reverse_listint(listint_t **head);
+int is_palindrome(listint_t **head);
+
 /**
- * is_palindrome - checks if a singly linked list is a palindrome.
- * @head: pointer to the head pointer
- * Return: 1 (If palindrome 0 Otherwise)
+ * reverse_listint - Reverses a singly-linked listint_t list.
+ * @head: A pointer to the starting node of the list to reverse.
+ *
+ * Return: A pointer to the head of the reversed list.
+ */
+listint_t *reverse_listint(listint_t **head)
+{
+	listint_t *node = *head, *next, *prev = NULL;
+
+	while (node)
+	{
+		next = node->next;
+		node->next = prev;
+		prev = node;
+		node = next;
+	}
+
+	*head = prev;
+	return (*head);
+}
+
+/**
+ * is_palindrome - Checks if a singly linked list is a palindrome.
+ * @head: A pointer to the head of the linked list.
+ *
+ * Return: If the linked list is not a palindrome - 0.
+ *         If the linked list is a palindrome - 1.
  */
 int is_palindrome(listint_t **head)
 {
-	listint_t *copy;
-	int count = 0, half, i, arr[3000] = {0};
+	listint_t *tmp, *rev, *mid;
+	size_t size = 0, i;
 
-	if (head == NULL || *head == NULL || (*head)->next == NULL)
+	if (*head == NULL || (*head)->next == NULL)
 		return (1);
 
-	copy = *head;
-	for (count = 0; copy != NULL; count++)
-		copy = copy->next;
-	copy = *head;
-	half = count / 2;
-	for (i = 0; i < half; i++)
-		copy = copy->next;
-	if (count % 2 == 1)
-		copy = copy->next;
-
-	for (i = half - 1; i >= 0; i--)
+	tmp = *head;
+	while (tmp)
 	{
-		arr[i] = copy->n;
-		copy = copy->next;
+		size++;
+		tmp = tmp->next;
 	}
-	copy = *head;
 
-	for (i = 0; i < half; i++)
+	tmp = *head;
+	for (i = 0; i < (size / 2) - 1; i++)
+		tmp = tmp->next;
+
+	if ((size % 2) == 0 && tmp->n != tmp->next->n)
+		return (0);
+
+	tmp = tmp->next->next;
+	rev = reverse_listint(&tmp);
+	mid = rev;
+
+	tmp = *head;
+	while (rev)
 	{
-		if (copy->n != arr[i])
+		if (tmp->n != rev->n)
 			return (0);
-		copy = copy->next;
+		tmp = tmp->next;
+		rev = rev->next;
 	}
+	reverse_listint(&mid);
 
 	return (1);
 }
